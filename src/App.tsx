@@ -1,25 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useRef } from "react";
+import TodoListPage from "./components/TodoListPage/TodoListPage";
+import ProfilePage from "./ProfilePage/ProfilePage";
+import { Route, Routes } from "react-router-dom";
+import { Layout } from "antd";
+import SiderBar from "./SiderBar/SiderBar";
+import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
+  const todoPageRef = useRef(<TodoListPage />);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Router>
+      <Layout>
+        <SiderBar />
+        <Layout
+          style={{ backgroundColor: "rgb(74, 137, 200)", minHeight: "100vh" }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <Routes>
+            <Route path="/" element={todoPageRef.current} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Routes>
+        </Layout>
+      </Layout>
+    </Router>
   );
 }
 
