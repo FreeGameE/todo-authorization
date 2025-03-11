@@ -7,8 +7,8 @@ const SiderBar: React.FC = () => {
   return (
     <Sider className="sider">
       <Flex vertical align="flex-start" style={{margin: "1rem 2rem"}}>
-        <Link to="/">Задачи</Link>
-        <Link to="/profile">Профиль</Link>
+        <Link to="/">Список задач</Link>
+        <Link to="/profile">Личный кабинет</Link>
       </Flex>
     </Sider>
   );

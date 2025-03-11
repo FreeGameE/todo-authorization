@@ -2,7 +2,7 @@ import { useState } from "react";
 import AddTodo from "../AddTodo/AddTodo";
 import ChangeList from "../ChangeList/ChangeList";
 import TodoList from "../TodoList/TodoList";
-import "./TodoListPage.css";
+// import "./TodoListPage.css";
 
 const TodoListPage: React.FC = () => {
   const [filteredTodoStatus, setFilteredTodoStatus] = useState("all");

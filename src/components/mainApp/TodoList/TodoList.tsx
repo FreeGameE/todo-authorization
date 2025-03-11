@@ -1,5 +1,5 @@
 import TodoItem from "../TodoItem/TodoItem";
-import { getData, Todo } from "../../api/usersApi";
+import { getData, Todo } from "../../../api/usersApi";
 import { useEffect, useState } from "react";
 
 type FilteredTodoStatus = {
