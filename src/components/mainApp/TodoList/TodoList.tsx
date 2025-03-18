@@ -1,6 +1,6 @@
 import TodoItem from "../TodoItem/TodoItem";
-import { getData, Todo } from "../../../api/usersApi";
-import { useEffect, useState } from "react";
+import { Todo } from "../../../api/usersApi";
+import { useEffect } from "react";
 
 type TodoListProps = {
   filteredTodoStatus: "all" | "completed" | "inWork";
@@ -24,7 +24,7 @@ const TodoList: React.FC<TodoListProps> = ({
     loadTodoList();
   }, [filteredTodoStatus]);
 
-  useEffect(() => {
+  useEffect!(() => {
     const interval = setInterval(() => {
       loadTodoList();
     }, 5000);
@@ -39,7 +39,7 @@ const TodoList: React.FC<TodoListProps> = ({
         todosData.map((data) => {
           return (
             <div key={`div${data.id}`}>
-              <TodoItem key={data.id} id={data.id} todosData={todosData}/>
+              <TodoItem key={data.id} id={data.id} todosData={todosData} loadTodoList={loadTodoList}/>
             </div>
           );
         })

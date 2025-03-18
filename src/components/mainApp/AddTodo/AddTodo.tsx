@@ -3,12 +3,23 @@ import { updateData, TodoRequest } from "../../../api/usersApi";
 import { useState } from "react";
 import { Button, Input, Form } from "antd";
 
-const AddTodo: React.FC = () => {
+type addTodoProps = {
+  filteredTodoStatus: "all" | "completed" | "inWork";
+  loadTodoList: () => Promise<void>;
+};
+
+const AddTodo: React.FC<addTodoProps> = ({
+  filteredTodoStatus,
+  loadTodoList,
+}) => {
   const [newTodo, setNewTodo] = useState<TodoRequest>({
     isDone: false,
     title: "",
   });
   const [form] = Form.useForm();
+
+  const minTaskLength = 2;
+  const maxTaskLength = 64;
 
   const addingTodo = async () => {
     if (newTodo.title && newTodo.title?.trim().length >= 2) {
@@ -20,8 +31,7 @@ const AddTodo: React.FC = () => {
         setNewTodo({
           title: "",
         });
-        window.dispatchEvent(new Event("todoListUpdated")); //!
-        window.dispatchEvent(new Event("todoCountUpdated"));
+        loadTodoList();
       } catch (error) {
         console.error("Ошибка при отправке данных:", error);
       }
@@ -30,7 +40,7 @@ const AddTodo: React.FC = () => {
 
   return (
     <Form
-    style={{marginTop: "1rem"}}
+      style={{ marginTop: "1rem" }}
       form={form}
       className="add-todo"
       onFinish={() => {
@@ -45,11 +55,11 @@ const AddTodo: React.FC = () => {
         rules={[
           { required: true, message: "Введите текст задачи" },
           {
-            min: 2,
+            min: minTaskLength,
             message: "Текст задачи должен содержать минимум 2 символа",
           },
           {
-            max: 64,
+            max: maxTaskLength,
             message: "Текст задачи должен содержать максимум 64 символа",
           },
         ]}
@@ -69,7 +79,11 @@ const AddTodo: React.FC = () => {
 
       <Form.Item>
         <Button
-          style={{ paddingInline: "2rem", paddingBlock: "1.1rem", marginBottom: "0" }}
+          style={{
+            paddingInline: "2rem",
+            paddingBlock: "1.1rem",
+            marginBottom: "0",
+          }}
           type="primary"
           htmlType="submit"
         >

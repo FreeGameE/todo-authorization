@@ -35,7 +35,7 @@ const TodoListPage: React.FC = () => {
     <div className="todo-list-page">
       <header>СПИСОК ЗАДАЧ</header>
       <section className="main-board">
-        <AddTodo />
+        <AddTodo loadTodoList={loadTodoList} filteredTodoStatus={filteredTodoStatus}/>
         <ChangeList
           setFilteredTodoStatus={setFilteredTodoStatus}
           filteredTodoStatus={filteredTodoStatus}

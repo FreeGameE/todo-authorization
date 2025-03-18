@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { getData, TodoInfo } from "../../../api/usersApi";
+import { TodoInfo } from "../../../api/usersApi";
 import { Button } from "antd";
 import "./ChangeList.css";
 
@@ -14,30 +13,11 @@ type ChangeListProps = {
 const ChangeList: React.FC<ChangeListProps> = ({
   setFilteredTodoStatus,
   filteredTodoStatus,
-  loadTodoList,
   todosInfo,
-  setTodosInfo
 }) => {
-  
-
-  const loadFilterFromStorage = () => {
-    const savedFilter = localStorage.getItem("todoFilter");
-    return savedFilter ? savedFilter : "all";
-  };
-
-  useEffect(() => {
-    loadTodoList();
-    // setTodosInfo(response!.info);
-  }, [filteredTodoStatus]);
-
-  useEffect!(() => {
-    const savedFilter = loadFilterFromStorage() as "all" | "completed" | "inWork";;
-    setFilteredTodoStatus(savedFilter);
-  }, []);
 
   const handleFilterChange = (filter: "all" | "completed" | "inWork") => {
     setFilteredTodoStatus(filter);
-    localStorage.setItem("todoFilter", filter);
   };
 
   return (
