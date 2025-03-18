@@ -3,16 +3,22 @@ import { getData, TodoInfo } from "../../../api/usersApi";
 import { Button } from "antd";
 import "./ChangeList.css";
 
-type SetFiltredTodoStatus = {
-  setFilteredTodoStatus: (value: string) => void;
-  filteredTodoStatus: any;
+type ChangeListProps = {
+  setFilteredTodoStatus: React.Dispatch<React.SetStateAction<"all" | "completed" | "inWork">>;
+  filteredTodoStatus: "all" | "completed" | "inWork";
+  loadTodoList: () => Promise<void>;
+  todosInfo: TodoInfo
+  setTodosInfo: React.Dispatch<React.SetStateAction<TodoInfo>>;
 };
 
-const ChangeList: React.FC<SetFiltredTodoStatus> = ({
+const ChangeList: React.FC<ChangeListProps> = ({
   setFilteredTodoStatus,
   filteredTodoStatus,
+  loadTodoList,
+  todosInfo,
+  setTodosInfo
 }) => {
-  const [todosInfo, setTodosInfo] = useState<TodoInfo>();
+  
 
   const loadFilterFromStorage = () => {
     const savedFilter = localStorage.getItem("todoFilter");
@@ -20,27 +26,16 @@ const ChangeList: React.FC<SetFiltredTodoStatus> = ({
   };
 
   useEffect(() => {
-    const loadTodoList = async () => {
-      try {
-        const response = await getData(filteredTodoStatus);
-        setTodosInfo(response!.info);
-      } catch (error) {
-        console.error("Ошибка при загрузке данных:", error);
-      }
-    };
     loadTodoList();
-    window.addEventListener("todoCountUpdated", loadTodoList);
-    return () => {
-      window.removeEventListener("todoCountUpdated", loadTodoList);
-    };
+    // setTodosInfo(response!.info);
   }, [filteredTodoStatus]);
 
   useEffect!(() => {
-    const savedFilter = loadFilterFromStorage();
+    const savedFilter = loadFilterFromStorage() as "all" | "completed" | "inWork";;
     setFilteredTodoStatus(savedFilter);
   }, []);
 
-  const handleFilterChange = (filter: string) => {
+  const handleFilterChange = (filter: "all" | "completed" | "inWork") => {
     setFilteredTodoStatus(filter);
     localStorage.setItem("todoFilter", filter);
   };

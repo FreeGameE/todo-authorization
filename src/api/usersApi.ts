@@ -27,8 +27,8 @@ export interface MetaResponse<T, N> {
 }
 
 const api = axios.create({
-  baseURL: "https://easydev.club/api/v2",
-  timeout: 1000,
+  baseURL: "https://easydev.club/api/v1",
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json; charset=UTF-8",
   },
@@ -37,7 +37,7 @@ const api = axios.create({
 export const getData = async (status: "all" | "completed" | "inWork") => {
   try {
     const response = await api.get("/todos", {
-      params: { filter: status },
+      params: status ? { filter: status } : {},
     });
     return response.data;
   } catch (error) {

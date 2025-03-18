@@ -15,11 +15,12 @@ import {
   FormOutlined,
 } from "@ant-design/icons";
 
-type Id = {
+type TodoItemProps = {
   id: number;
+  todosData: Todo[];
 };
 
-const TodoItem: React.FC<Id> = React.memo(({ id }) => {
+const TodoItem: React.FC<TodoItemProps> = React.memo(({ id, todosData }) => {
   const [currentTodoData, setCurrentTodoData] = useState<Todo>();
   const [newTodoTitle, setNewTodoTitle] = useState<TodoRequest>({
     title: currentTodoData?.title,
@@ -27,28 +28,26 @@ const TodoItem: React.FC<Id> = React.memo(({ id }) => {
   const [editingStatus, setEditingStatus] = useState<boolean>(false);
   // console.log("Компонент перерисовался");
 
-  const loadTodoItem = useCallback(async () => {
-    try {
-      const todo = await getTodoById(id);
-
-      if (todo && (todo.title !== currentTodoData?.title || todo.isDone !== currentTodoData?.isDone)) {
-        setCurrentTodoData(todo);
-        setNewTodoTitle({ title: todo.title });
-      }
-    } catch (error) {
-      console.error("Ошибка при загрузке данных:", error);
-    } finally {
-      window.dispatchEvent(new Event("visibilityChange"));
+  const loadTodoItem = useCallback(() => {
+    const todo = todosData.find((t) => t.id === id);
+  
+    if (todo && (todo.title !== currentTodoData?.title || todo.isDone !== currentTodoData?.isDone)) {
+      setCurrentTodoData(todo);
+      setNewTodoTitle({ title: todo.title });
     }
-  }, [id, currentTodoData]);
-
+  
+    window.dispatchEvent(new Event("visibilityChange"));
+  }, [id, currentTodoData, todosData]);
+  
+  useEffect!(() => {
+    const interval = setInterval(() => {
+      loadTodoItem();
+    }, 5000);
+    return () => clearInterval(interval); // сбросить счётчик
+  }, []);
 
   useEffect(() => {
     loadTodoItem();
-    window.addEventListener("todoItemUpdated", loadTodoItem);
-    return () => {
-      window.removeEventListener("todoItemUpdated", loadTodoItem);
-    };
   }, [loadTodoItem]);
 
   const changingTodoTitle = async () => {
@@ -57,8 +56,7 @@ const TodoItem: React.FC<Id> = React.memo(({ id }) => {
       setNewTodoTitle({ title: newTodoTitle.title?.trim() });
       await changeData(currentTodoData!.id, newTodoTitle);
       // window.dispatchEvent(new Event("todoListUpdated"));
-      window.dispatchEvent(new Event("todoCountUpdated"));
-      window.dispatchEvent(new Event("todoItemUpdated"));
+      // window.dispatchEvent(new Event("todoCountUpdated"));
     } catch (error) {
       console.error("Ошибка при отправке данных:", error);
     }

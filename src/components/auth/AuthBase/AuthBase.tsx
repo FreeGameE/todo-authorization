@@ -1,10 +1,11 @@
 import { Image } from "antd";
 import React from "react";
-import "./LoginPage.css";
+import "./AuthPage.css";
 import LoginBox from "../LoginBox/LoginBox";
 import RegistrationBox from "../RegistrationBox/RegistrationBox";
+import RegistrationCompletedBox from "../RegistrationCompletedBox/RegistrationCompletedBox";
 
-const LoginPage: React.FC = () => {
+const AuthBase: React.FC = () => {
   return (
     <div className="frame">
       <div
@@ -44,10 +45,11 @@ const LoginPage: React.FC = () => {
       </div>
       <div className="right-side">
         {/* <LoginBox /> */}
-        <RegistrationBox />
+        {/* <RegistrationBox /> */}
+        <RegistrationCompletedBox/>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default AuthBase;

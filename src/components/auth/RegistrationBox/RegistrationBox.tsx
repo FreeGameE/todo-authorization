@@ -1,14 +1,39 @@
 import { Button, Flex, Form, Input, Typography } from "antd";
+import { UserRegistration, Profile, newUser } from "../../../api/authorizationApi";
 import "./RegistrationBox.css";
+import { useNavigate } from "react-router-dom";
 
 const RegistrationBox: React.FC = () => {
+  const navigate = useNavigate();
+
+  const onFinish = async (values: any) => {
+    const registrationData: UserRegistration = {
+      username: values.username,
+      login: values.login,
+      password: values.password,
+      email: values.email,
+      phoneNumber: values.phone,
+    };
+
+    try {
+      const userData = await newUser(registrationData);
+      // navigate("/register-success");
+      console.log(userData)
+      alert("Регистрация успешна!");
+    } catch (error) {
+      console.error("Ошибка при регистрации:", error);
+      alert("Ошибка при регистрации. Попробуйте снова.");
+    } finally {
+    }
+  };  
+
   return (
     <Flex vertical align="center" className="registration-box">
       <div className="registration-box-heading">
         <Typography style={{ fontSize: "36px" }}>Создание аккаунта</Typography>
       </div>
 
-      <Form style={{ width: "100%" }} layout="vertical">
+      <Form style={{ width: "100%" }} layout="vertical" onFinish={onFinish}>
         <Form.Item
           label="Имя пользователя"
           layout="vertical"
@@ -67,7 +92,7 @@ const RegistrationBox: React.FC = () => {
             },
           ]}
         >
-          <Input.Password/>
+          <Input.Password />
         </Form.Item>
 
         <Form.Item
@@ -108,7 +133,6 @@ const RegistrationBox: React.FC = () => {
           name="phone"
           validateTrigger="onChange"
           rules={[
-            { required: true, message: "" },
             {
               pattern: /^[+]?[0-9]{11}$/,
               message: "Введите корректный номер телефона",
@@ -118,7 +142,11 @@ const RegistrationBox: React.FC = () => {
           <Input />
         </Form.Item>
 
-        <Button style={{ width: "100%", margin: "0" }} type="primary">
+        <Button
+          style={{ width: "100%", margin: "0" }}
+          type="primary"
+          htmlType="submit"
+        >
           Зарегистрироваться
         </Button>
       </Form>
