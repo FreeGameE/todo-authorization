@@ -1,12 +1,8 @@
 import "./AddTodo.css";
-import { updateData, TodoRequest } from "../../../api/usersApi";
+import { postData } from "../../../api/todosApi";
 import { useState } from "react";
 import { Button, Input, Form } from "antd";
-
-type addTodoProps = {
-  filteredTodoStatus: "all" | "completed" | "inWork";
-  loadTodoList: () => Promise<void>;
-};
+import { TodoRequest, addTodoProps } from "../../../types/todos";
 
 const AddTodo: React.FC<addTodoProps> = ({
   filteredTodoStatus,
@@ -27,7 +23,7 @@ const AddTodo: React.FC<addTodoProps> = ({
         title: newTodo.title.trim(),
       });
       try {
-        await updateData(newTodo);
+        await postData(newTodo);
         setNewTodo({
           title: "",
         });
@@ -38,17 +34,17 @@ const AddTodo: React.FC<addTodoProps> = ({
     } else alert("Текст должен быть от 2 до 64 символов");
   };
 
+  const handleFinish = () => {
+    addingTodo();
+    form.resetFields();
+  };
+
   return (
     <Form
       style={{ marginTop: "1rem" }}
       form={form}
       className="add-todo"
-      onFinish={() => {
-        addingTodo();
-        console.log(newTodo.title?.length);
-        console.log(newTodo.title);
-        form.resetFields();
-      }}
+      onFinish={handleFinish}
     >
       <Form.Item
         name="title"
@@ -67,7 +63,6 @@ const AddTodo: React.FC<addTodoProps> = ({
       >
         <Input
           placeholder="Ваша задача"
-          // maxLength={64}
           value={newTodo.title}
           onChange={(event) => {
             setNewTodo({

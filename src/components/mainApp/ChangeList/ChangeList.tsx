@@ -1,21 +1,12 @@
-import { TodoInfo } from "../../../api/usersApi";
+import { ChangeListProps } from "../../../types/todos";
 import { Button } from "antd";
 import "./ChangeList.css";
-
-type ChangeListProps = {
-  setFilteredTodoStatus: React.Dispatch<React.SetStateAction<"all" | "completed" | "inWork">>;
-  filteredTodoStatus: "all" | "completed" | "inWork";
-  loadTodoList: () => Promise<void>;
-  todosInfo: TodoInfo
-  setTodosInfo: React.Dispatch<React.SetStateAction<TodoInfo>>;
-};
 
 const ChangeList: React.FC<ChangeListProps> = ({
   setFilteredTodoStatus,
   filteredTodoStatus,
   todosInfo,
 }) => {
-
   const handleFilterChange = (filter: "all" | "completed" | "inWork") => {
     setFilteredTodoStatus(filter);
   };

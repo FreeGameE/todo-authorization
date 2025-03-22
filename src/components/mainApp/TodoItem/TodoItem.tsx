@@ -1,24 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Todo,
-  changeData,
-  TodoRequest,
-  deleteData,
-} from "../../../api/usersApi";
+import { changeData, deleteData } from "../../../api/todosApi";
+import { Todo, TodoRequest, TodoItemProps } from "../../../types/todos";
 import "./TodoItem.css";
-import { Button, Form } from "antd";
+import { Button, Form, Input } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
   DeleteOutlined,
   FormOutlined,
 } from "@ant-design/icons";
-
-type TodoItemProps = {
-  id: number;
-  todosData: Todo[];
-  loadTodoList: () => Promise<void>;
-};
 
 const TodoItem: React.FC<TodoItemProps> = React.memo(
   ({ id, todosData, loadTodoList }) => {
@@ -27,7 +17,9 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       title: currentTodoData?.title,
     });
     const [editingStatus, setEditingStatus] = useState<boolean>(false);
-    // console.log("Компонент перерисовался");
+
+    const minTaskLength = 2;
+    const maxTaskLength = 64;
 
     const loadTodoItem = useCallback(() => {
       const todo = todosData.find((t) => t.id === id);
@@ -42,17 +34,6 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       }
     }, [id, currentTodoData, todosData]);
 
-    useEffect!(() => {
-      const interval = setInterval(() => {
-        loadTodoItem();
-      }, 5000);
-      return () => clearInterval(interval); // сбросить счётчик
-    }, []);
-
-    useEffect(() => {
-      loadTodoItem();
-    }, [loadTodoItem]);
-
     const changingTodoTitle = async () => {
       try {
         setEditingStatus(false);
@@ -66,7 +47,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       }
     };
 
-    const changingTodoStatus = async () => {
+    const handleChangeStatus = async () => {
       try {
         await changeData(currentTodoData!.id, {
           isDone: !currentTodoData?.isDone,
@@ -78,7 +59,24 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       }
     };
 
-    const deletingTodo = async (id: number) => {
+    const handleEditClick = () => {
+      setEditingStatus(true);
+      setNewTodoTitle({ title: currentTodoData!.title.trim() });
+    };
+
+    const handleAcceptClick = () => {
+      if (
+        newTodoTitle!.title!.trim().length >= 2 &&
+        newTodoTitle!.title!.trim().length <= 64
+      ) {
+        changingTodoTitle();
+        setEditingStatus(false);
+      } else {
+        alert("Текст должен быть от 2 до 64 символов");
+      }
+    };
+
+    const handleDeleteClick = async (id: number) => {
       try {
         await deleteData(id);
         loadTodoList();
@@ -87,6 +85,17 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
         console.error("Ошибка при отправке данных:", error);
       }
     };
+
+    useEffect!(() => {
+      const interval = setInterval(() => {
+        loadTodoItem();
+      }, 5000);
+      return () => clearInterval(interval); // сбросить счётчик
+    }, []);
+
+    useEffect(() => {
+      loadTodoItem();
+    }, [loadTodoItem]);
 
     return (
       <>
@@ -106,7 +115,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
                   marginRight: "0.6rem",
                 }}
                 onClick={() => {
-                  changingTodoStatus();
+                  handleChangeStatus();
                 }}
               />
               {editingStatus ? (
@@ -118,17 +127,20 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
                       rules={[
                         { required: true, message: "Введите текст задачи" },
                         {
-                          min: 2,
+                          min: minTaskLength,
                           message:
                             "Текст задачи должен содержать минимум 2 символа",
+                        },
+                        {
+                          max: maxTaskLength,
+                          message:
+                            "Текст задачи должен содержать максимум 64 символа",
                         },
                       ]}
                       style={{ marginBottom: "0", width: "12rem" }}
                     >
-                      <textarea
+                      <Input.TextArea
                         rows={5}
-                        maxLength={64}
-                        required
                         onChange={(event) =>
                           setNewTodoTitle({ title: event?.target.value })
                         }
@@ -162,7 +174,6 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
                     className="cancel-Button"
                     onClick={() => setEditingStatus(false)}
                   >
-                    {/* <img src="/cancel.png" alt="cancel" /> */}
                     <CloseOutlined />
                   </Button>
                   {/* кнопка принять изменения */}
@@ -170,14 +181,8 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
                     form={`change${id}`}
                     className="accept-Button"
                     style={{ marginLeft: "0.3rem" }}
-                    onClick={() =>
-                      newTodoTitle!.title!.trim().length >= 2
-                        ? (changingTodoTitle(), setEditingStatus(false))
-                        : // window.dispatchEvent(new Event("todoListUpdated")))
-                          alert("Текст должен быть от 2 до 64 символов")
-                    }
+                    onClick={handleAcceptClick}
                   >
-                    {/* <img src="/accept.png" alt="accept" /> */}
                     <CheckOutlined />
                   </Button>
                 </>
@@ -185,14 +190,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
                 <>
                   {/* //$ кнопка редактировать */}
 
-                  <Button
-                    className="edit-Button"
-                    onClick={() => {
-                      setEditingStatus(true);
-                      setNewTodoTitle({ title: currentTodoData!.title.trim() });
-                    }}
-                  >
-                    {/* <img src="/edit.png" alt="edit" /> */}
+                  <Button className="edit-Button" onClick={handleEditClick}>
                     <FormOutlined />
                   </Button>
                 </>
@@ -201,13 +199,12 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
               <Button
                 style={{ marginLeft: "0.3rem" }}
                 onClick={() => {
-                  deletingTodo(id);
+                  handleDeleteClick(id);
                 }}
                 className={
                   !editingStatus ? "delete-Button" : "delete-Button unactive"
                 }
               >
-                {/* <img src="/delete.png" alt="delete" /> */}
                 <DeleteOutlined />
               </Button>
             </section>
