@@ -11,23 +11,23 @@ function App() {
   const todoPageRef = useRef(<TodoListPage />);
 
   return (
-    <Router>
-      <Layout>
-        <SiderBar />
-        <Layout
-          style={{ backgroundColor: "rgb(74, 137, 200)", minHeight: "100vh" }}
-        >
-          <Routes>
-            <Route path="/" element={todoPageRef.current} />
-            <Route path="/profile" element={<ProfilePage />} />
-          </Routes>
-        </Layout>
-      </Layout>
-    </Router>
     // <Router>
-
-    //   <AuthPage />  
+    //   <Layout>
+    //     <SiderBar />
+    //     <Layout
+    //       style={{ backgroundColor: "rgb(74, 137, 200)", minHeight: "100vh" }}
+    //     >
+    //       <Routes>
+    //         <Route path="/" element={todoPageRef.current} />
+    //         <Route path="/profile" element={<ProfilePage />} />
+    //       </Routes>
+    //     </Layout>
+    //   </Layout>
     // </Router>
+    <Router>
+
+      <AuthPage />  
+    </Router>
   );
 }
 

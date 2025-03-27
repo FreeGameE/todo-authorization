@@ -1,8 +1,10 @@
 import { Button, Checkbox, Flex, Form, Input, Typography } from "antd";
-import { AuthData, authUser } from "../../../api/authorizationApi";
+import { authUser } from "../../../api/authorizationApi";
+import { AuthData } from "../../../types/authorization";
 import "./LoginBox.css";
 
 const LoginBox: React.FC = () => {
+
   const onFinish = async (values: any) => {
     const authData: AuthData = {
       login: values.login,

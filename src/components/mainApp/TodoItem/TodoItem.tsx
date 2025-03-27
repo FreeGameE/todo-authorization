@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { changeData, deleteData } from "../../../api/todosApi";
 import { Todo, TodoRequest, TodoItemProps } from "../../../types/todos";
 import "./TodoItem.css";
-import { Button, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -34,7 +34,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       }
     }, [id, currentTodoData, todosData]);
 
-    const changingTodoTitle = async () => {
+    const changeTodoTitle = async () => {
       try {
         setEditingStatus(false);
         setNewTodoTitle({ title: newTodoTitle.title?.trim() });
@@ -64,12 +64,12 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       setNewTodoTitle({ title: currentTodoData!.title.trim() });
     };
 
-    const handleAcceptClick = () => {
+    const handleSubmitEdit = () => {
       if (
         newTodoTitle!.title!.trim().length >= 2 &&
         newTodoTitle!.title!.trim().length <= 64
       ) {
-        changingTodoTitle();
+        changeTodoTitle();
         setEditingStatus(false);
       } else {
         alert("Текст должен быть от 2 до 64 символов");
@@ -104,19 +104,11 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
         ) : (
           <div className="todo-item">
             <section className="left-side">
-              <img
-                src={
-                  !currentTodoData?.isDone ? "/empty-circle.png" : "/passed.png"
-                }
-                alt="incomplete"
-                style={{
-                  width: "1rem",
-                  height: "1rem",
-                  marginRight: "0.6rem",
-                }}
-                onClick={() => {
-                  handleChangeStatus();
-                }}
+              <Checkbox
+                checked={currentTodoData?.isDone}
+                onChange={handleChangeStatus}
+                className="todo-checkbox"
+                style={{ marginRight: "0.5rem" }}
               />
               {editingStatus ? (
                 <>
@@ -181,7 +173,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
                     form={`change${id}`}
                     className="accept-Button"
                     style={{ marginLeft: "0.3rem" }}
-                    onClick={handleAcceptClick}
+                    onClick={handleSubmitEdit}
                   >
                     <CheckOutlined />
                   </Button>

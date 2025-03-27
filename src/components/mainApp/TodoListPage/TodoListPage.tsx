@@ -4,6 +4,7 @@ import ChangeList from "../ChangeList/ChangeList";
 import TodoList from "../TodoList/TodoList";
 import { getData} from "../../../api/todosApi";
 import {Todo, TodoInfo} from "../../../types/todos"
+// import "./TodoListPage.css";
 
 const TodoListPage: React.FC = () => {
   const [filteredTodoStatus, setFilteredTodoStatus] = useState<"all" | "completed" | "inWork">("all");

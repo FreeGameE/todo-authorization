@@ -1,5 +1,6 @@
 import { Button, Flex, Form, Input, Typography } from "antd";
-import { UserRegistration, Profile, newUser } from "../../../api/authorizationApi";
+import { newUser } from "../../../api/authorizationApi";
+import { UserRegistration, Profile } from "../../../types/authorization";
 import "./RegistrationBox.css";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +18,7 @@ const RegistrationBox: React.FC = () => {
 
     try {
       const userData = await newUser(registrationData);
-      // navigate("/register-success");
+      navigate("/register-success");
       console.log(userData)
       alert("Регистрация успешна!");
     } catch (error) {

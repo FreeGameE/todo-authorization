@@ -1,46 +1,5 @@
 import axios from "axios";
-
-export interface UserRegistration {
-  login: string;
-  username: string;
-  password: string;
-  email: string;
-  phoneNumber: string;
-}
-
-export interface AuthData {
-  login: string;
-  password: string;
-}
-
-export interface RefreshToken {
-  refreshToken: string;
-}
-
-export interface Profile {
-  id: number;
-  username: string;
-  email: string;
-  date: string;
-  isBlocked: boolean;
-  isAdmin: boolean;
-  phoneNumber: string;
-}
-
-export interface ProfileRequest {
-  username: string;
-  email: string;
-  phoneNumber: string;
-}
-
-export interface PasswordRequest {
-  password: string;
-}
-
-export interface Token {
-  access: string;
-  refresh: string;
-}
+import { UserRegistration, AuthData } from "../types/authorization";
 
 const api = axios.create({
   baseURL: "https://easydev.club/api/v1",
@@ -66,7 +25,6 @@ export const authUser = async (authData: AuthData) => {
     const response = await api.post("/auth/signin", authData);
     
     console.log(response)
-    console.log(response.data.refreshToken)
 
     return(response.data)
     // console.log(response.data)
