@@ -1,41 +1,36 @@
-import "./AddTodo.css";
 import { postData } from "../../../api/todosApi";
-import { useState } from "react";
 import { Button, Input, Form } from "antd";
-import { TodoRequest, addTodoProps } from "../../../types/todos";
+import { Status } from "../../../types/todos";
+import "./AddTodo.css";
+
+type addTodoProps = {
+  filteredTodoStatus: Status;
+  loadTodoList: () => Promise<void>;
+};
 
 const AddTodo: React.FC<addTodoProps> = ({
   filteredTodoStatus,
   loadTodoList,
 }) => {
-  const [newTodo, setNewTodo] = useState<TodoRequest>({
-    isDone: false,
-    title: "",
-  });
   const [form] = Form.useForm();
 
   const minTaskLength = 2;
   const maxTaskLength = 64;
 
-  const addingTodo = async () => {
-    if (newTodo.title && newTodo.title?.trim().length >= 2) {
-      setNewTodo({
-        title: newTodo.title.trim(),
-      });
-      try {
-        await postData(newTodo);
-        setNewTodo({
-          title: "",
-        });
-        loadTodoList();
-      } catch (error) {
-        console.error("Ошибка при отправке данных:", error);
-      }
-    } else alert("Текст должен быть от 2 до 64 символов");
+  const addingTodo = async (formData: FormData) => {
+    const title = formData.get("title") as string;
+    try {
+      await postData({ title: title.trim() });
+      loadTodoList();
+    } catch (error) {
+      console.error("Ошибка при отправке данных:", error);
+    }
   };
 
-  const handleFinish = () => {
-    addingTodo();
+  const handleFinish = (values: { title: string }) => {
+    const formData = new FormData();
+    formData.append("title", values.title);
+    addingTodo(formData);
     form.resetFields();
   };
 
@@ -63,12 +58,6 @@ const AddTodo: React.FC<addTodoProps> = ({
       >
         <Input
           placeholder="Ваша задача"
-          value={newTodo.title}
-          onChange={(event) => {
-            setNewTodo({
-              title: event.target.value,
-            });
-          }}
         />
       </Form.Item>
 

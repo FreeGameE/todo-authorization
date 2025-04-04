@@ -1,36 +1,33 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getData} from "../../../api/todosApi";
+import {Status, Todo, TodoInfo} from "../../../types/todos"
 import AddTodo from "../AddTodo/AddTodo";
 import ChangeList from "../ChangeList/ChangeList";
 import TodoList from "../TodoList/TodoList";
-import { getData} from "../../../api/todosApi";
-import {Todo, TodoInfo} from "../../../types/todos"
-// import "./TodoListPage.css";
 
 const TodoListPage: React.FC = () => {
-  const [filteredTodoStatus, setFilteredTodoStatus] = useState<"all" | "completed" | "inWork">("all");
+  const [filteredTodoStatus, setFilteredTodoStatus] = useState<Status>("all");
   const [todosData, setTodosData] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [todosInfo, setTodosInfo] = useState<TodoInfo>({ all: 0, completed: 0, inWork: 0 });
 
-  const loadTodoList = async () => {
+  const loadTodoList = useCallback( async () => {
     try {
       const response = await getData(filteredTodoStatus);
-      const newData: Todo[] = response!.data;
-      setTodosData((prevTodos) => {
-        const updatedTodos = newData.map((newTodo: Todo) => {
-          const existingTodo = prevTodos.find((todo) => todo.id === newTodo.id);
-
-          return existingTodo ? { ...existingTodo, ...newTodo } : newTodo;
-        });
-        return updatedTodos;
-      });
-      setTodosInfo(response!.info)
+      const newData: Todo[] = response.data;
+      setTodosData(newData);
+      setTodosInfo(response.info);
     } catch (error) {
       console.error("Ошибка при загрузке данных:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [filteredTodoStatus]);
+
+  useEffect(() => {
+    setLoading(true);
+    loadTodoList();
+  }, [filteredTodoStatus, loadTodoList ])
 
   return (
     <div className="todo-list-page">
@@ -40,16 +37,12 @@ const TodoListPage: React.FC = () => {
         <ChangeList
           setFilteredTodoStatus={setFilteredTodoStatus}
           filteredTodoStatus={filteredTodoStatus}
-          loadTodoList={loadTodoList}
           todosInfo={todosInfo}
-          setTodosInfo={setTodosInfo}
         />
         <TodoList
           filteredTodoStatus={filteredTodoStatus}
           todosData={todosData}
-          setTodosData={setTodosData}
           loading={loading}
-          setLoading={setLoading}
           loadTodoList={loadTodoList}
         />
       </section>

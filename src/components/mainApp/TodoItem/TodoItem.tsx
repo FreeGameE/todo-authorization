@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Button, Checkbox, Col, Form, Input, message, Typography } from "antd";
 import { changeData, deleteData } from "../../../api/todosApi";
-import { Todo, TodoRequest, TodoItemProps } from "../../../types/todos";
+import { Todo } from "../../../types/todos";
 import "./TodoItem.css";
-import { Button, Checkbox, Form, Input } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -10,198 +10,165 @@ import {
   FormOutlined,
 } from "@ant-design/icons";
 
+type TodoItemProps = {
+  todo: Todo;
+  loadTodoList: () => Promise<void>;
+};
+
 const TodoItem: React.FC<TodoItemProps> = React.memo(
-  ({ id, todosData, loadTodoList }) => {
-    const [currentTodoData, setCurrentTodoData] = useState<Todo>();
-    const [newTodoTitle, setNewTodoTitle] = useState<TodoRequest>({
-      title: currentTodoData?.title,
-    });
+  ({ todo, loadTodoList }) => {
     const [editingStatus, setEditingStatus] = useState<boolean>(false);
+    const [form] = Form.useForm();
 
     const minTaskLength = 2;
     const maxTaskLength = 64;
-
-    const loadTodoItem = useCallback(() => {
-      const todo = todosData.find((t) => t.id === id);
-
-      if (
-        todo &&
-        (todo.title !== currentTodoData?.title ||
-          todo.isDone !== currentTodoData?.isDone)
-      ) {
-        setCurrentTodoData(todo);
-        setNewTodoTitle({ title: todo.title });
-      }
-    }, [id, currentTodoData, todosData]);
-
-    const changeTodoTitle = async () => {
-      try {
-        setEditingStatus(false);
-        setNewTodoTitle({ title: newTodoTitle.title?.trim() });
-        await changeData(currentTodoData!.id, newTodoTitle);
-        loadTodoList();
-        loadTodoItem();
-      } catch (error) {
-        console.error("Ошибка при отправке данных:", error);
-      } finally {
-      }
-    };
-
+    
     const handleChangeStatus = async () => {
       try {
-        await changeData(currentTodoData!.id, {
-          isDone: !currentTodoData?.isDone,
+        await changeData(todo.id, {
+          isDone: !todo.isDone,
         });
         loadTodoList();
-        loadTodoItem();
       } catch (error) {
         console.error("Ошибка при отправке данных:", error);
       }
     };
 
     const handleEditClick = () => {
+      loadTodoList();
+      form.setFieldsValue({ title: todo.title });
       setEditingStatus(true);
-      setNewTodoTitle({ title: currentTodoData!.title.trim() });
     };
 
-    const handleSubmitEdit = () => {
+    const handleSubmitEdit = async (values: { title: string }) => {
+      const trimmedTitle = values.title.trim();
       if (
-        newTodoTitle!.title!.trim().length >= 2 &&
-        newTodoTitle!.title!.trim().length <= 64
+        trimmedTitle.length >= minTaskLength &&
+        trimmedTitle.length <= maxTaskLength
       ) {
-        changeTodoTitle();
-        setEditingStatus(false);
+        try {
+          await changeData(todo.id, { title: trimmedTitle });
+          loadTodoList();
+          setEditingStatus(false);
+        } catch (error) {
+          console.error("Ошибка при отправке данных:", error);
+        }
       } else {
-        alert("Текст должен быть от 2 до 64 символов");
+        message.error("Текст должен быть от 2 до 64 символов");
       }
     };
 
-    const handleDeleteClick = async (id: number) => {
+    const handleDeleteClick = async () => {
       try {
-        await deleteData(id);
+        await deleteData(todo.id);
         loadTodoList();
-        loadTodoItem();
       } catch (error) {
         console.error("Ошибка при отправке данных:", error);
       }
     };
 
-    useEffect!(() => {
-      const interval = setInterval(() => {
-        loadTodoItem();
-      }, 5000);
-      return () => clearInterval(interval); // сбросить счётчик
-    }, []);
-
-    useEffect(() => {
-      loadTodoItem();
-    }, [loadTodoItem]);
-
     return (
       <>
-        {false ? (
-          <div></div>
-        ) : (
-          <div className="todo-item">
-            <section className="left-side">
-              <Checkbox
-                checked={currentTodoData?.isDone}
-                onChange={handleChangeStatus}
-                className="todo-checkbox"
-                style={{ marginRight: "0.5rem" }}
-              />
-              {editingStatus ? (
-                <>
-                  <Form id={`change${id}`}>
-                    <Form.Item
-                      initialValue={newTodoTitle?.title}
-                      name="title"
-                      rules={[
-                        { required: true, message: "Введите текст задачи" },
-                        {
-                          min: minTaskLength,
-                          message:
-                            "Текст задачи должен содержать минимум 2 символа",
-                        },
-                        {
-                          max: maxTaskLength,
-                          message:
-                            "Текст задачи должен содержать максимум 64 символа",
-                        },
-                      ]}
-                      style={{ marginBottom: "0", width: "12rem" }}
-                    >
-                      <Input.TextArea
-                        rows={5}
-                        onChange={(event) =>
-                          setNewTodoTitle({ title: event?.target.value })
-                        }
-                        value={newTodoTitle?.title}
-                        style={{
-                          resize: "none",
-                          margin: "16px 0px",
-                        }}
-                      />
-                    </Form.Item>
-                  </Form>
-                </>
-              ) : (
-                <p
-                  className="todo-item-p"
-                  style={
-                    currentTodoData?.isDone
-                      ? { textDecoration: "line-through", color: "dimgray" }
-                      : undefined
-                  }
+        <div className="todo-item">
+          <Col className="todo-left-side">
+            <Checkbox
+              checked={todo?.isDone}
+              onChange={handleChangeStatus}
+              className="todo-checkbox"
+              style={{ marginRight: "0.5rem" }}
+            />
+            {editingStatus ? (
+              <>
+                <Form
+                  id={`change${todo.id}`}
+                  form={form}
+                  onFinish={handleSubmitEdit}
+                  initialValues={{ title: todo.title }}
                 >
-                  {currentTodoData?.title}
-                </p>
-              )}
-            </section>
-            <section className="right-side">
-              {editingStatus ? (
-                <>
-                  {/* //* кнопка отменить изменения */}
-                  <Button
-                    className="cancel-Button"
-                    onClick={() => setEditingStatus(false)}
+                  <Form.Item
+                    initialValue={todo?.title}
+                    name="title"
+                    rules={[
+                      { required: true, message: "Введите текст задачи" },
+                      {
+                        min: minTaskLength,
+                        message:
+                          "Текст задачи должен содержать минимум 2 символа",
+                      },
+                      {
+                        max: maxTaskLength,
+                        message:
+                          "Текст задачи должен содержать максимум 64 символа",
+                      },
+                    ]}
+                    style={{ marginBottom: "0", width: "12rem" }}
                   >
-                    <CloseOutlined />
-                  </Button>
-                  {/* кнопка принять изменения */}
-                  <Button
-                    form={`change${id}`}
-                    className="accept-Button"
-                    style={{ marginLeft: "0.3rem" }}
-                    onClick={handleSubmitEdit}
-                  >
-                    <CheckOutlined />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  {/* //$ кнопка редактировать */}
-
-                  <Button className="edit-Button" onClick={handleEditClick}>
-                    <FormOutlined />
-                  </Button>
-                </>
-              )}
-              {/* //@ кнопка удалить todo */}
-              <Button
-                style={{ marginLeft: "0.3rem" }}
-                onClick={() => {
-                  handleDeleteClick(id);
-                }}
-                className={
-                  !editingStatus ? "delete-Button" : "delete-Button unactive"
-                }
+                    <Input.TextArea
+                      rows={5}
+                      style={{
+                        resize: "none",
+                        margin: "16px 0px",
+                      }}
+                    />
+                  </Form.Item>
+                </Form>
+              </>
+            ) : (
+              <Typography.Text
+                className="todo-item-p"
+                delete={todo.isDone}
+                type={todo.isDone ? "secondary" : undefined}
+                key={todo.isDone ? "done" : "not-done"}
               >
-                <DeleteOutlined />
-              </Button>
-            </section>
-          </div>
-        )}
+                {todo?.title}
+              </Typography.Text>
+            )}
+          </Col>
+          <Col className="todo-right-side" style={{display: "flex", gap: "0.3rem"}}>
+            {editingStatus ? (
+              <>
+                {/* //* кнопка отменить изменения */}
+                <Button
+                  className="cancel-Button"
+                  onClick={() => setEditingStatus(false)}
+                  icon={<CloseOutlined />}
+                  color="orange"
+                  variant="solid"
+                />
+                {/* кнопка принять изменения */}
+                <Button
+                  form={`change${todo.id}`}
+                  className="accept-Button"
+                  htmlType="submit"
+                  icon={<CheckOutlined />}
+                  color="green"
+                  variant="solid"
+                />
+              </>
+            ) : (
+              
+                // {/* //$ кнопка редактировать */}
+                <Button
+                  className="edit-Button"
+                  onClick={handleEditClick}
+                  icon={<FormOutlined />}
+                  color="primary"
+                  variant="solid"
+                />
+              
+            )}
+            {/* //@ кнопка удалить todo */}
+            <Button
+              onClick={() => {
+                handleDeleteClick();
+              }}
+              disabled={editingStatus}
+              icon={<DeleteOutlined />}
+              color="danger"
+              variant="solid"
+            />
+          </Col>
+        </div>
       </>
     );
   }

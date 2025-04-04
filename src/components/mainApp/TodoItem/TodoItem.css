@@ -1,5 +1,5 @@
 .todo-item {
-  padding: 0rem 1rem;
+  padding: 0.6rem 1rem;
   margin: 0.3rem;
   display: flex;
   align-items: center;
@@ -8,19 +8,19 @@
   border-radius: 0.5rem;
 }
 
-.left-side {
+.todo-left-side {
   display: flex;
   align-items: center;
   max-width: 16rem;
 }
 
-.left-side p {
+.todo-left-side p {
   word-break: break-all;
   border: 1px solid rgb(255, 255, 255);
   margin: 16px 0px;
 }
 
-.right-side {
+.todo-right-side {
   display: flex;
   align-items: center;
 }

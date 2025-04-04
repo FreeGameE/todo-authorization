@@ -2,8 +2,16 @@ import { Button, Checkbox, Flex, Form, Input, Typography } from "antd";
 import { authUser } from "../../../api/authorizationApi";
 import { AuthData } from "../../../types/authorization";
 import "./LoginBox.css";
+import { loginSuccess } from "../../../store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { RootState } from "../../../store/store";
 
 const LoginBox: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
   const onFinish = async (values: any) => {
     const authData: AuthData = {
@@ -13,12 +21,23 @@ const LoginBox: React.FC = () => {
 
     try {
       const loginData = await authUser(authData);
+      dispatch(
+        loginSuccess({
+          accessToken: loginData.accessToken,
+          refreshToken: loginData.refreshToken,
+        })
+      );
+      navigate("/");
       console.log(loginData.accessToken);
       console.log(loginData.refreshToken);
     } catch (error) {
       console.error("Ошибка при передаче данных:", error);
     }
   };
+
+  useEffect(() => {
+    console.log("Обновленный accessToken:", accessToken);
+  }, [accessToken]);
 
   return (
     <Flex vertical align="center" className="login-box">

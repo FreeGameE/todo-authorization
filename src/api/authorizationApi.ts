@@ -25,7 +25,7 @@ export const authUser = async (authData: AuthData) => {
     const response = await api.post("/auth/signin", authData);
     
     console.log(response)
-
+    
     return(response.data)
     // console.log(response.data)
   } catch (error) {

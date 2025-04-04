@@ -1,22 +1,37 @@
 import { Image, Layout, Typography } from "antd";
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import LoginBox from "../LoginBox/LoginBox";
 import RegistrationBox from "../RegistrationBox/RegistrationBox";
 import RegistrationCompletedBox from "../RegistrationCompletedBox/RegistrationCompletedBox";
 import "./AuthPage.css";
+// import { useSelector } from "react-redux";
+// import { RootState } from "../../../store/store";
 
 const { Content, Sider } = Layout;
 
 const AuthPage: React.FC = () => {
-  
+  // const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const location = useLocation();
+
+  let formComponent;
+  switch (location.pathname) {
+    case "/register":
+      formComponent = <RegistrationBox />;
+      break;
+    case "/register-success":
+      formComponent = <RegistrationCompletedBox />;
+      break;
+    default:
+      formComponent = <LoginBox />;
+  }
 
   return (
     <Layout className="frame" style={{ height: "95vh" }}>
       <Sider width="56%" style={{ position: "relative", overflow: "hidden" }}>
         <Image
           src="/login-illustration.jpg"
-          alt="Изображение списка задач"
+          alt="Изображение"
           preview={false}
           style={{
             width: "100%",
@@ -42,18 +57,7 @@ const AuthPage: React.FC = () => {
         </Typography>
       </Sider>
 
-      {/* Правая часть с формами */}
-      <Content className="right-side">
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<LoginBox />} />
-          <Route path="/register" element={<RegistrationBox />} />
-          <Route
-            path="/register-success"
-            element={<RegistrationCompletedBox />}
-          />
-        </Routes>
-      </Content>
+      <Content className="right-side">{formComponent}</Content>
     </Layout>
   );
 };

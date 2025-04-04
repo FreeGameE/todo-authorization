@@ -4,6 +4,7 @@ import Sider from "antd/es/layout/Sider";
 import "./SiderBar.css";
 
 const SiderBar: React.FC = () => {
+
   return (
     <Sider className="sider">
       <Flex vertical align="flex-start" style={{margin: "1rem 2rem"}}>
