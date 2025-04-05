@@ -28,7 +28,7 @@ const LoginBox: React.FC = () => {
     } catch (error: any) {
       if (error.response?.status === 401) {
 
-        notification.error({
+        notification.open({
           message: "Ошибка авторизации",
           description: "Неверные логин или пароль",
         });
