@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
+  isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
   accessToken: localStorage.getItem("accessToken") || null,
   refreshToken: localStorage.getItem("refreshToken") || null,
+  isAuthenticated: false,
 };
 
 const authSlice = createSlice({
@@ -30,7 +32,9 @@ const authSlice = createSlice({
       state.refreshToken = null;
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      state.isAuthenticated = false;
     },
+    
   },
 });
 

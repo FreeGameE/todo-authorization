@@ -2,9 +2,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
 } from "react-router-dom";
-import { Layout } from "antd";
+import { Button, Layout, notification } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import SiderBar from "./components/mainApp/SiderBar/SiderBar";
@@ -15,6 +14,7 @@ import { useEffect } from "react";
 import { loginSuccess } from "./store/authSlice";
 import PrivateRoute from "./components/auth/PrivateRoute/PrivateRoute";
 import PublicRoute from "./components/auth/AuthPage/PublicRoute/PublicRoute";
+
 
 function App() {
   const dispatch = useDispatch();
@@ -36,6 +36,16 @@ function App() {
 
   return (
     <Router>
+      <Button
+      onClick={() => {
+        notification.info({
+          message: 'Тест',
+          description: 'Это проверка нотификаций',
+        });
+      }}
+    >
+      Кликни меня
+    </Button>
       <Routes>
         <Route
           path="/login"
@@ -61,40 +71,29 @@ function App() {
             </PublicRoute>
           }
         />
-
-        {accessToken ? (
-          <Route
-            path="/*"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <SiderBar />
-                  <Layout
-                    style={{
-                      backgroundColor: "rgb(74, 137, 200)",
-                      minHeight: "100vh",
-                    }}
-                  >
-                    <Routes>
-                      <Route path="/" element={<TodoListPage />} />
-                      <Route path="/profile" element={<ProfilePage />} />
-                    </Routes>
-                  </Layout>
+        <Route
+          path="/*"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <SiderBar />
+                <Layout
+                  style={{
+                    backgroundColor: "rgb(74, 137, 200)",
+                    minHeight: "100vh",
+                  }}
+                >
+                  <Routes>
+                    <Route path="/" element={<TodoListPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                  </Routes>
                 </Layout>
-              </PrivateRoute>
-            }
-          />
-        ) : (
-          <Route
-            path="*"
-            element={
-              <PrivateRoute>
-                <Navigate to="/" />
-              </PrivateRoute>
-            }
-          />
-        )}
+              </Layout>
+            </PrivateRoute>
+          }
+        />
       </Routes>
+      
     </Router>
   );
 }

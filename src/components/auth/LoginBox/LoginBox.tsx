@@ -1,16 +1,14 @@
-import { Button, Checkbox, Flex, Form, Input, Typography } from "antd";
-import { authUser } from "../../../api/authorizationApi";
+import { Button, Checkbox, Flex, Form, Input, message, notification, Typography } from "antd";
+import { authUser } from "../../../api/authApi";
 import { AuthData } from "../../../types/authorization";
 import "./LoginBox.css";
 import { loginSuccess } from "../../../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { RootState } from "../../../store/store";
 
 const LoginBox: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
   const onFinish = async (values: any) => {
@@ -27,11 +25,16 @@ const LoginBox: React.FC = () => {
           refreshToken: loginData.refreshToken,
         })
       );
-      navigate("/");
-      console.log(loginData.accessToken);
-      console.log(loginData.refreshToken);
-    } catch (error) {
-      console.error("Ошибка при передаче данных:", error);
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+
+        notification.error({
+          message: "Ошибка авторизации",
+          description: "Неверные логин или пароль",
+        });
+      } else {
+        alert("Произошла ошибка. Попробуйте позже.");
+      }
     }
   };
 

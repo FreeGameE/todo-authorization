@@ -13,8 +13,8 @@ const api = axios.create({
 export const newUser = async (registrationData: UserRegistration) => {
   try {
     const response = await api.post("/auth/signup", registrationData);
-    
-    return(response.data)
+
+    return response.data;
   } catch (error) {
     console.error("Ошибка при отправке данных:", error);
   }
@@ -23,12 +23,18 @@ export const newUser = async (registrationData: UserRegistration) => {
 export const authUser = async (authData: AuthData) => {
   try {
     const response = await api.post("/auth/signin", authData);
-    
-    console.log(response)
-    
-    return(response.data)
-    // console.log(response.data)
-  } catch (error) {
-    console.error("Ошибка при отправке данных:", error)
+    console.log(response);
+    return response.data;
+  } catch (error: any) {
+    throw error;
   }
-}
+};
+
+export const logoutUser = async () => {
+  try {
+    const response = await api.post("user/logout");
+    console.log(response);
+  } catch (error) {
+    console.error("Ошибка запроса:", error);
+  }
+};
