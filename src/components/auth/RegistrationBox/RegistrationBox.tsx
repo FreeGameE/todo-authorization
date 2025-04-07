@@ -3,9 +3,11 @@ import { newUser } from "../../../api/authApi";
 import { UserRegistration } from "../../../types/authorization";
 import "./RegistrationBox.css";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const RegistrationBox: React.FC = () => {
   const navigate = useNavigate();
+  const [isExistingUser, setIsExistingUser] = useState<boolean>(false);
 
   const onFinish = async (values: any) => {
     const registrationData: UserRegistration = {
@@ -19,19 +21,28 @@ const RegistrationBox: React.FC = () => {
     try {
       const userData = await newUser(registrationData);
       navigate("/register-success");
-      console.log(userData)
+      console.log(userData);
       alert("Регистрация успешна!");
-    } catch (error) {
-      console.error("Ошибка при регистрации:", error);
-      alert("Ошибка при регистрации. Попробуйте снова.");
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        setIsExistingUser(true);
+      } else {
+        alert("Произошла ошибка. Попробуйте позже.");
+      }
     } finally {
     }
-  };  
+  };
 
   return (
     <Flex vertical align="center" className="registration-box">
       <div className="registration-box-heading">
         <Typography style={{ fontSize: "36px" }}>Создание аккаунта</Typography>
+        <Flex justify="center">
+          <Typography style={{ marginRight: "0.3rem" }}>
+            Уже зарегистрированы?
+          </Typography>
+          <Typography.Link href="/login">Войти в аккаунт</Typography.Link>
+        </Flex>
       </div>
 
       <Form style={{ width: "100%" }} layout="vertical" onFinish={onFinish}>
@@ -150,6 +161,24 @@ const RegistrationBox: React.FC = () => {
         >
           Зарегистрироваться
         </Button>
+        {isExistingUser ? (
+          <div style={{ position: "relative", width: "100%" }}>
+            <Typography.Text
+              type="danger"
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                marginTop: "1rem",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              Пользователь с таким логином или почтой уже существует.
+            </Typography.Text>
+          </div>
+        ) : undefined}
       </Form>
     </Flex>
   );

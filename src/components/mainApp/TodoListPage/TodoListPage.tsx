@@ -1,17 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
-import { getData} from "../../../api/todosApi";
-import {Status, Todo, TodoInfo} from "../../../types/todos"
+import { getData } from "../../../api/todosApi";
+import { Status, Todo, TodoInfo } from "../../../types/todos";
 import AddTodo from "../AddTodo/AddTodo";
 import ChangeList from "../ChangeList/ChangeList";
 import TodoList from "../TodoList/TodoList";
+import "./TodoListPage.css";
 
 const TodoListPage: React.FC = () => {
   const [filteredTodoStatus, setFilteredTodoStatus] = useState<Status>("all");
   const [todosData, setTodosData] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [todosInfo, setTodosInfo] = useState<TodoInfo>({ all: 0, completed: 0, inWork: 0 });
+  const [todosInfo, setTodosInfo] = useState<TodoInfo>({
+    all: 0,
+    completed: 0,
+    inWork: 0,
+  });
 
-  const loadTodoList = useCallback( async () => {
+  const loadTodoList = useCallback(async () => {
     try {
       const response = await getData(filteredTodoStatus);
       const newData: Todo[] = response.data;
@@ -27,13 +32,16 @@ const TodoListPage: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     loadTodoList();
-  }, [filteredTodoStatus, loadTodoList ])
+  }, [filteredTodoStatus, loadTodoList]);
 
   return (
     <div className="todo-list-page">
       <header>СПИСОК ЗАДАЧ</header>
       <section className="main-board">
-        <AddTodo loadTodoList={loadTodoList} filteredTodoStatus={filteredTodoStatus}/>
+        <AddTodo
+          loadTodoList={loadTodoList}
+          filteredTodoStatus={filteredTodoStatus}
+        />
         <ChangeList
           setFilteredTodoStatus={setFilteredTodoStatus}
           filteredTodoStatus={filteredTodoStatus}

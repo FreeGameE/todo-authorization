@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../store/store";
+import { RootState } from "../../../store/store";
 import { JSX } from "react";
 
 interface Props {
@@ -8,9 +8,9 @@ interface Props {
 }
 
 const PublicRoute = ({ children }: Props) => {
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
 
-  if (accessToken) {
+  if (isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 

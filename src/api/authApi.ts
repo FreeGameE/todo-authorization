@@ -15,8 +15,8 @@ export const newUser = async (registrationData: UserRegistration) => {
     const response = await api.post("/auth/signup", registrationData);
 
     return response.data;
-  } catch (error) {
-    console.error("Ошибка при отправке данных:", error);
+  } catch (error: any) {
+    throw error;
   }
 };
 
@@ -32,9 +32,37 @@ export const authUser = async (authData: AuthData) => {
 
 export const logoutUser = async () => {
   try {
-    const response = await api.post("user/logout");
+    const response = await api.post("user/logout", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
     console.log(response);
   } catch (error) {
     console.error("Ошибка запроса:", error);
+  }
+};
+
+export const refreshAccessToken = async () => {
+  try {
+    const response = await api.post("/auth/refresh", {
+      refreshToken: localStorage.getItem("refreshToken"),
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get("/user/profile", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error;
   }
 };

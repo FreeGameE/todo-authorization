@@ -1,15 +1,15 @@
-import { Button, Checkbox, Flex, Form, Input, message, notification, Typography } from "antd";
+import { Button, Checkbox, Flex, Form, Input, Typography } from "antd";
 import { authUser } from "../../../api/authApi";
 import { AuthData } from "../../../types/authorization";
 import "./LoginBox.css";
-import { loginSuccess } from "../../../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useState } from "react";
 import { RootState } from "../../../store/store";
+import { authStatusChange } from "../../../store/authSlice";
 
 const LoginBox: React.FC = () => {
   const dispatch = useDispatch();
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const [isAuthFailed, setIsAuthFailed] = useState<boolean>(false);
 
   const onFinish = async (values: any) => {
     const authData: AuthData = {
@@ -18,29 +18,19 @@ const LoginBox: React.FC = () => {
     };
 
     try {
-      const loginData = await authUser(authData);
-      dispatch(
-        loginSuccess({
-          accessToken: loginData.accessToken,
-          refreshToken: loginData.refreshToken,
-        })
-      );
+      const response = await authUser(authData);
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("refreshToken", response.refreshToken);
+      setIsAuthFailed(false);
+      dispatch(authStatusChange(true));
     } catch (error: any) {
       if (error.response?.status === 401) {
-
-        notification.open({
-          message: "Ошибка авторизации",
-          description: "Неверные логин или пароль",
-        });
+        setIsAuthFailed(true);
       } else {
         alert("Произошла ошибка. Попробуйте позже.");
       }
     }
   };
-
-  useEffect(() => {
-    console.log("Обновленный accessToken:", accessToken);
-  }, [accessToken]);
 
   return (
     <Flex vertical align="center" className="login-box">
@@ -82,6 +72,24 @@ const LoginBox: React.FC = () => {
           >
             Войти
           </Button>
+          {isAuthFailed ? (
+            <div style={{ position: "relative", width: "100%" }}>
+              <Typography.Text
+                type="danger"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  marginTop: "1rem",
+                  width: "100%",
+                  textAlign: "center",
+                }}
+              >
+                Неверный логин или пароль.
+              </Typography.Text>
+            </div>
+          ) : undefined}
         </Form.Item>
       </Form>
       <div

@@ -16,28 +16,15 @@ const authSlice = createSlice({
   name: "auth",
   initialState: initialState,
   reducers: {
-    loginSuccess(
-      state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>
-    ) {
-      console.log("Получены токены:", action.payload);
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
-
-      localStorage.setItem("accessToken", action.payload.accessToken);
-      localStorage.setItem("refreshToken", action.payload.refreshToken);
-    },
     logout(state) {
-      state.accessToken = null;
-      state.refreshToken = null;
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
       state.isAuthenticated = false;
     },
-    
+    authStatusChange(state, action: PayloadAction<boolean>) {
+      state.isAuthenticated = action.payload;
+    },
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { logout, authStatusChange } = authSlice.actions;
 
 export default authSlice.reducer;

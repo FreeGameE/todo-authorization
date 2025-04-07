@@ -1,51 +1,53 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
-import { Button, Layout, notification } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./store/store";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Flex, Layout, Typography } from "antd";
 import SiderBar from "./components/mainApp/SiderBar/SiderBar";
 import TodoListPage from "./components/mainApp/TodoListPage/TodoListPage";
 import ProfilePage from "./components/mainApp/ProfilePage/ProfilePage";
 import AuthPage from "./components/auth/AuthPage/AuthPage";
-import { useEffect } from "react";
-import { loginSuccess } from "./store/authSlice";
+import { useEffect, useState } from "react";
 import PrivateRoute from "./components/auth/PrivateRoute/PrivateRoute";
-import PublicRoute from "./components/auth/AuthPage/PublicRoute/PublicRoute";
-
+import PublicRoute from "./components/auth/PublicRoute/PublicRoute";
+import { logoutUser, refreshAccessToken } from "./api/authApi";
+import { authStatusChange } from "./store/authSlice";
+import { useDispatch } from "react-redux";
 
 function App() {
+  const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+
+  const getTokens = async () => {
+    setLoading(true);
+    if (localStorage.getItem("refreshToken")) {
+      try {
+        const response = await refreshAccessToken();
+        console.log(response);
+        localStorage.setItem("accessToken", response.accessToken);
+        localStorage.setItem("refreshToken", response.refreshToken);
+        dispatch(authStatusChange(true));
+      } catch (error: any) {
+        console.error("Ошибка запроса:", error);
+        if (error.response?.status === 401) {
+          logoutUser();
+        }
+      }
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const storedAccessToken = localStorage.getItem("accessToken");
-    const storedRefreshToken = localStorage.getItem("refreshToken");
-
-    if (storedAccessToken && storedRefreshToken && !accessToken) {
-      dispatch(
-        loginSuccess({
-          accessToken: storedAccessToken,
-          refreshToken: storedRefreshToken,
-        })
-      );
+    if (localStorage.getItem("refreshToken")) {
+      getTokens();
     }
-  }, [dispatch, accessToken]);
+  }, []);
 
-  return (
+  return loading ? (
+    <Flex justify="center" align="center" style={{height: "100vh"}}>
+      <Typography.Title level={3} style={{ color: "white" }}>
+        Загрузка...
+      </Typography.Title>
+    </Flex>
+  ) : (
     <Router>
-      <Button
-      onClick={() => {
-        notification.info({
-          message: 'Тест',
-          description: 'Это проверка нотификаций',
-        });
-      }}
-    >
-      Кликни меня
-    </Button>
       <Routes>
         <Route
           path="/login"
@@ -93,7 +95,6 @@ function App() {
           }
         />
       </Routes>
-      
     </Router>
   );
 }

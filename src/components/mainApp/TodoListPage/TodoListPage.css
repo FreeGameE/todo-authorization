@@ -6,8 +6,8 @@
   margin: 1.5rem auto;
 }
 
-.profile-board {
-  width: 27rem;
+.main-board {
+  max-width: 27rem;
   margin: 1rem auto;
   padding: 1.5rem;
   background-color: rgb(228, 234, 255);
