@@ -1,6 +1,7 @@
 import { Status, Todo } from "../../../types/todos";
 import { useEffect } from "react";
 import TodoItem from "../TodoItem/TodoItem";
+import { Flex } from "antd";
 
 type TodoListProps = {
   filteredTodoStatus: Status;
@@ -27,19 +28,19 @@ const TodoList: React.FC<TodoListProps> = ({
   }, [filteredTodoStatus, loadTodoList]);
 
   return (
-    <div>
+    <Flex vertical>
       {loading ? (
         <p style={{ textAlign: "center" }}>Загрузка...</p>
       ) : (
         todosData.map((todo) => {
           return (
-            <div key={`div${todo.id}`}>
+            <Flex vertical key={`div${todo.id}`}>
               <TodoItem key={todo.id} todo={todo} loadTodoList={loadTodoList} />
-            </div>
+            </Flex>
           );
         })
       )}
-    </div>
+    </Flex>
   );
 };
 

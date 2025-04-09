@@ -1,5 +1,5 @@
 import { TodoInfo, Status } from "../../../types/todos";
-import { Button } from "antd";
+import { Button, Flex } from "antd";
 import "./ChangeList.css";
 
 type ChangeListProps = {
@@ -18,7 +18,7 @@ const ChangeList: React.FC<ChangeListProps> = ({
   };
 
   return (
-    <div className="todo-status" style={{ marginTop: "0" }}>
+    <Flex className="todo-status" style={{ marginTop: "0" }}>
       <Button
         onClick={() => handleFilterChange("all")}
         className={filteredTodoStatus === "all" ? "active" : undefined}
@@ -37,7 +37,7 @@ const ChangeList: React.FC<ChangeListProps> = ({
       >
         Завершённые({todosInfo?.completed})
       </Button>
-    </div>
+    </Flex>
   );
 };
 

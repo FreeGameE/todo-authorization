@@ -1,10 +1,9 @@
-import { Button, Checkbox, Flex, Form, Input, Typography } from "antd";
+import { Button, Checkbox, Flex, Form, Input, Typography, Image } from "antd";
 import { authUser } from "../../../api/authApi";
 import { AuthData } from "../../../types/authorization";
 import "./LoginBox.css";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { RootState } from "../../../store/store";
 import { authStatusChange } from "../../../store/authSlice";
 
 const LoginBox: React.FC = () => {
@@ -34,12 +33,24 @@ const LoginBox: React.FC = () => {
 
   return (
     <Flex vertical align="center" className="login-box">
-      <div className="login-box-heading">
+      <Image
+        src="/logo.svg"
+        alt="Изображение"
+        preview={false}
+        style={{
+          width: "4rem",
+          height: "4rem",
+          position: "absolute",
+          bottom: "calc(-1rem)",
+          right: "9.5rem"
+        }}
+      />
+      <Flex vertical className="login-box-heading">
         <Typography style={{ fontSize: "36px" }}>Войдите в аккаунт</Typography>
         <Typography style={{ fontSize: "16px" }}>
           Посмотрите, что с вашим бизнесом
         </Typography>
-      </div>
+      </Flex>
       <Form style={{ width: "100%" }} layout="vertical" onFinish={onFinish}>
         <Form.Item label="Логин" layout="vertical" name="login">
           <Input style={{ width: "100%" }} />
@@ -60,9 +71,11 @@ const LoginBox: React.FC = () => {
           }}
         >
           <Form.Item>
-            <Checkbox>Запомнить вход</Checkbox>
+            <Checkbox defaultChecked>Запомнить вход</Checkbox>
           </Form.Item>
-          <Typography.Link>Забыли пароль?</Typography.Link>
+          <Typography.Link href="/forgot-password">
+            Забыли пароль?
+          </Typography.Link>
         </div>
         <Form.Item>
           <Button

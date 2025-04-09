@@ -5,6 +5,7 @@ import LoginBox from "../LoginBox/LoginBox";
 import RegistrationBox from "../RegistrationBox/RegistrationBox";
 import RegistrationCompletedBox from "../RegistrationCompletedBox/RegistrationCompletedBox";
 import "./AuthPage.css";
+import ForgotPasswordBox from "../ForgotPasswordBox/ForgotPasswordBox";
 // import { useSelector } from "react-redux";
 // import { RootState } from "../../../store/store";
 
@@ -21,6 +22,9 @@ const AuthPage: React.FC = () => {
       break;
     case "/register-success":
       formComponent = <RegistrationCompletedBox />;
+      break;
+    case "/forgot-password":
+      formComponent = <ForgotPasswordBox />;
       break;
     default:
       formComponent = <LoginBox />;

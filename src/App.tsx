@@ -74,6 +74,14 @@ function App() {
           }
         />
         <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        />
+        <Route
           path="/*"
           element={
             <PrivateRoute>

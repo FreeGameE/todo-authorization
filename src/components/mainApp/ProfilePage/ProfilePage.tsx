@@ -1,18 +1,14 @@
 import { Button, Typography } from "antd";
 import { Flex } from "antd";
 import "./ProfilePage.css";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logout } from "../../../store/authSlice";
 import { getUserProfile, logoutUser } from "../../../api/authApi";
 import { useEffect, useState } from "react";
 import { Profile } from "../../../types/authorization";
-import { RootState } from "../../../store/store";
 
 const ProfilePage: React.FC = () => {
   const [userProfileData, setUserProfileData] = useState<Profile>();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
   const dispatch = useDispatch();
 
   const hadleLogout = async () => {
@@ -42,30 +38,53 @@ const ProfilePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="profile-board">
-      <Flex vertical align="center" justify="center">
-        <Typography.Title level={3}>Профиль</Typography.Title>
-        <Flex>
-          <Flex vertical style={{width: "23rem"}}>
-            <Typography.Paragraph>
-              Имя пользователя: {userProfileData?.username}
-            </Typography.Paragraph>
-            <Typography.Paragraph>
-              Почтовый адрес: {userProfileData?.email}
-            </Typography.Paragraph>
-            <Typography.Paragraph>
-              Номер телефона:{" "}
-              {userProfileData?.phoneNumber
-                ? userProfileData?.phoneNumber
-                : "не указано"}
-            </Typography.Paragraph>
+    <Flex vertical align="center">
+      <Typography.Title
+        level={2}
+        style={{ color: "white", textAlign: "center", marginTop: "0.6rem" }}
+      >
+        ЛИЧНЫЙ КАБИНЕТ
+      </Typography.Title>
+      <Flex className="profile-board">
+        <Typography.Title level={4}>Данные профиля</Typography.Title>
+        <Flex vertical>
+          <Flex>
+            <Flex vertical style={{ width: "auto" }}>
+              <Typography.Paragraph>
+                {"Имя пользователя: "}
+                <Typography.Text style={{ fontWeight: "500" }}>
+                  {userProfileData?.username}
+                </Typography.Text>
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                {"Почтовый адрес: "}
+                <Typography.Text style={{ fontWeight: "500" }}>
+                  {userProfileData?.email}
+                </Typography.Text>
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                {"Номер телефона: "}
+                <Typography.Text style={{ fontWeight: "500" }}>
+                  {userProfileData?.phoneNumber
+                    ? userProfileData?.phoneNumber
+                    : "не указано"}
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Flex>
+          </Flex>
+          <Flex justify="center">
+            <Button
+              color="blue"
+              variant="solid"
+              style={{ width: "5rem" }}
+              onClick={() => hadleLogout()}
+            >
+              Выйти
+            </Button>
           </Flex>
         </Flex>
-        <Button color="blue" variant="solid" onClick={() => hadleLogout()}>
-          Выйти
-        </Button>
       </Flex>
-    </div>
+    </Flex>
   );
 };
 

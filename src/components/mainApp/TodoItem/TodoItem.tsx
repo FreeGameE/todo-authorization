@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Checkbox, Col, Form, Input, message, Typography } from "antd";
+import { Button, Checkbox, Col, Flex, Form, Input, message, Typography } from "antd";
 import { changeData, deleteData } from "../../../api/todosApi";
 import { Todo } from "../../../types/todos";
 import "./TodoItem.css";
@@ -69,7 +69,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
 
     return (
       <>
-        <div className="todo-item">
+        <Flex className="todo-item">
           <Col className="todo-left-side">
             <Checkbox
               checked={todo?.isDone}
@@ -168,7 +168,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
               variant="solid"
             />
           </Col>
-        </div>
+        </Flex>
       </>
     );
   }

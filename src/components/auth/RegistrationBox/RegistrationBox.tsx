@@ -35,7 +35,7 @@ const RegistrationBox: React.FC = () => {
 
   return (
     <Flex vertical align="center" className="registration-box">
-      <div className="registration-box-heading">
+      <Flex vertical className="registration-box-heading">
         <Typography style={{ fontSize: "36px" }}>Создание аккаунта</Typography>
         <Flex justify="center">
           <Typography style={{ marginRight: "0.3rem" }}>
@@ -43,7 +43,7 @@ const RegistrationBox: React.FC = () => {
           </Typography>
           <Typography.Link href="/login">Войти в аккаунт</Typography.Link>
         </Flex>
-      </div>
+      </Flex>
 
       <Form style={{ width: "100%" }} layout="vertical" onFinish={onFinish}>
         <Form.Item
@@ -162,7 +162,7 @@ const RegistrationBox: React.FC = () => {
           Зарегистрироваться
         </Button>
         {isExistingUser ? (
-          <div style={{ position: "relative", width: "100%" }}>
+          <Flex style={{ position: "relative", width: "100%" }}>
             <Typography.Text
               type="danger"
               style={{
@@ -177,7 +177,7 @@ const RegistrationBox: React.FC = () => {
             >
               Пользователь с таким логином или почтой уже существует.
             </Typography.Text>
-          </div>
+          </Flex>
         ) : undefined}
       </Form>
     </Flex>
