@@ -5,7 +5,7 @@ import AddTodo from "../AddTodo/AddTodo";
 import ChangeList from "../ChangeList/ChangeList";
 import TodoList from "../TodoList/TodoList";
 import "./TodoListPage.css";
-import { Typography } from "antd";
+import { Flex, Typography } from "antd";
 
 const TodoListPage: React.FC = () => {
   const [filteredTodoStatus, setFilteredTodoStatus] = useState<Status>("all");
@@ -36,9 +36,14 @@ const TodoListPage: React.FC = () => {
   }, [filteredTodoStatus, loadTodoList]);
 
   return (
-    <div className="todo-list-page">
-      <Typography.Title level={2} style={{color: "white", textAlign: "center", marginTop: "0.6rem"}}>СПИСОК ЗАДАЧ</Typography.Title>
-      <section className="main-board">
+    <Flex vertical className="todo-list-page">
+      <Typography.Title
+        level={2}
+        style={{ color: "white", textAlign: "center", marginTop: "0.6rem" }}
+      >
+        СПИСОК ЗАДАЧ
+      </Typography.Title>
+      <Flex className="main-board">
         <AddTodo
           loadTodoList={loadTodoList}
           filteredTodoStatus={filteredTodoStatus}
@@ -54,8 +59,8 @@ const TodoListPage: React.FC = () => {
           loading={loading}
           loadTodoList={loadTodoList}
         />
-      </section>
-    </div>
+      </Flex>
+    </Flex>
   );
 };
 

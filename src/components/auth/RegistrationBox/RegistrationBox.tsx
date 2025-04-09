@@ -1,6 +1,6 @@
 import { Button, Flex, Form, Input, Typography } from "antd";
 import { newUser } from "../../../api/authApi";
-import { UserRegistration } from "../../../types/authorization";
+import { UserRegistration } from "../../../types/auth";
 import "./RegistrationBox.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";

@@ -40,3 +40,7 @@ export interface Token {
   access: string;
   refresh: string;
 }
+
+export interface AuthState {
+  isAuthenticated: boolean;
+}

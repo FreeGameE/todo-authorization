@@ -1,6 +1,6 @@
 import { Button, Checkbox, Flex, Form, Input, Typography, Image } from "antd";
 import { authUser } from "../../../api/authApi";
-import { AuthData } from "../../../types/authorization";
+import { AuthData } from "../../../types/auth";
 import "./LoginBox.css";
 import { useDispatch } from "react-redux";
 import { useState } from "react";

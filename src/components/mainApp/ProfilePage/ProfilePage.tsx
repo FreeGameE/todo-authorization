@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../../store/authSlice";
 import { getUserProfile, logoutUser } from "../../../api/authApi";
 import { useEffect, useState } from "react";
-import { Profile } from "../../../types/authorization";
+import { Profile } from "../../../types/auth";
 
 const ProfilePage: React.FC = () => {
   const [userProfileData, setUserProfileData] = useState<Profile>();

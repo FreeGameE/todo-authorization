@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UserRegistration, AuthData } from "../types/authorization";
+import { UserRegistration, AuthData } from "../types/auth";
 
 const api = axios.create({
   baseURL: "https://easydev.club/api/v1",
