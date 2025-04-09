@@ -4,7 +4,7 @@ import SiderBar from "./components/mainApp/SiderBar/SiderBar";
 import TodoListPage from "./components/mainApp/TodoListPage/TodoListPage";
 import ProfilePage from "./components/mainApp/ProfilePage/ProfilePage";
 import AuthPage from "./components/auth/AuthPage/AuthPage";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PrivateRoute from "./components/auth/PrivateRoute/PrivateRoute";
 import PublicRoute from "./components/auth/PublicRoute/PublicRoute";
 import { logoutUser, refreshAccessToken } from "./api/authApi";
@@ -15,7 +15,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
 
-  const getTokens = async () => {
+  const getTokens = useCallback( async () => {
     setLoading(true);
     if (localStorage.getItem("refreshToken")) {
       try {
@@ -32,13 +32,13 @@ function App() {
       }
     }
     setLoading(false);
-  };
+  }, [dispatch])
 
   useEffect(() => {
     if (localStorage.getItem("refreshToken")) {
       getTokens();
     }
-  }, []);
+  }, [getTokens]);
 
   return loading ? (
     <Flex justify="center" align="center" style={{height: "100vh"}}>
