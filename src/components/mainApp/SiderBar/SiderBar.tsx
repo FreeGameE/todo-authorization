@@ -5,17 +5,17 @@ import "./SiderBar.css";
 import {
   ProfileOutlined,
   UserOutlined,
-  LeftOutlined,
-  RightOutlined,
+  // LeftOutlined,
+  // RightOutlined,
 } from "@ant-design/icons";
 
 const SiderBar: React.FC = () => {
   return (
     <Sider width={"15vw"} className="sider">
-      <Flex className="slider">
+      {/* <Flex className="slider">
         <LeftOutlined style={{ margin: "0px" }} />
         <RightOutlined style={{ margin: "0px" }} />
-      </Flex>
+      </Flex> */}
       <Link to="/">
         <Flex justify="center" style={{ marginTop: "1rem" }}>
           <Image
