@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UserRegistration, AuthData } from "../types/auth";
+import { UserRegistration, AuthData, ProfileRequest } from "../types/auth";
 
 const api = axios.create({
   baseURL: "https://easydev.club/api/v1",
@@ -23,7 +23,6 @@ export const newUser = async (registrationData: UserRegistration) => {
 export const authUser = async (authData: AuthData) => {
   try {
     const response = await api.post("/auth/signin", authData);
-    console.log(response);
     return response.data;
   } catch (error: any) {
     throw error;
@@ -32,7 +31,7 @@ export const authUser = async (authData: AuthData) => {
 
 export const logoutUser = async () => {
   try {
-    const response = await api.post("user/logout", {
+    const response = await api.post("user/logout", null, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
@@ -62,6 +61,18 @@ export const getUserProfile = async () => {
       },
     });
     return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+export const putUserProfile = async (changedUserData: ProfileRequest) => {
+  try {
+    await api.put("/user/profile", changedUserData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
   } catch (error: any) {
     throw error;
   }
