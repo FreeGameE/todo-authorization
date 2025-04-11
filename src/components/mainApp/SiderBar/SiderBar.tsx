@@ -11,7 +11,7 @@ import {
 
 const SiderBar: React.FC = () => {
   return (
-    <Sider width={"15vw"} className="sider">
+    <Sider width={"15rem"} className="sider">
       {/* <Flex className="slider">
         <LeftOutlined style={{ margin: "0px" }} />
         <RightOutlined style={{ margin: "0px" }} />
