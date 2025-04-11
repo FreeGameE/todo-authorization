@@ -1,27 +1,108 @@
-import React, { useRef } from "react";
-import TodoListPage from "./components/TodoListPage/TodoListPage";
-import ProfilePage from "./ProfilePage/ProfilePage";
-import { Route, Routes } from "react-router-dom";
-import { Layout } from "antd";
-import SiderBar from "./SiderBar/SiderBar";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Flex, Layout, Typography } from "antd";
+import SiderBar from "./components/mainApp/SiderBar/SiderBar";
+import TodoListPage from "./components/mainApp/TodoListPage/TodoListPage";
+import ProfilePage from "./components/mainApp/ProfilePage/ProfilePage";
+import AuthPage from "./components/auth/AuthPage/AuthPage";
+import { useCallback, useEffect, useState } from "react";
+import PrivateRoute from "./components/auth/PrivateRoute/PrivateRoute";
+import PublicRoute from "./components/auth/PublicRoute/PublicRoute";
+import { logoutUser, refreshAccessToken } from "./api/authApi";
+import { authStatusChange } from "./store/authSlice";
+import { useDispatch } from "react-redux";
 
 function App() {
-  const todoPageRef = useRef(<TodoListPage />);
+  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
-  return (
+  const getTokens = useCallback( async () => {
+    setLoading(true);
+    if (localStorage.getItem("refreshToken")) {
+      try {
+        const response = await refreshAccessToken();
+        console.log(response);
+        localStorage.setItem("accessToken", response.accessToken);
+        localStorage.setItem("refreshToken", response.refreshToken);
+        dispatch(authStatusChange(true));
+      } catch (error: any) {
+        console.error("Ошибка запроса:", error);
+        if (error.response?.status === 401) {
+          logoutUser();
+        }
+      }
+    }
+    setLoading(false);
+  }, [dispatch])
+
+  useEffect(() => {
+    if (localStorage.getItem("refreshToken")) {
+      getTokens();
+    }
+  }, [getTokens]);
+
+  return loading ? (
+    <Flex justify="center" align="center" style={{height: "100vh"}}>
+      <Typography.Title level={3} style={{ color: "white" }}>
+        Загрузка...
+      </Typography.Title>
+    </Flex>
+  ) : (
     <Router>
-      <Layout>
-        <SiderBar />
-        <Layout
-          style={{ backgroundColor: "rgb(74, 137, 200)", minHeight: "100vh" }}
-        >
-          <Routes>
-            <Route path="/" element={todoPageRef.current} />
-            <Route path="/profile" element={<ProfilePage />} />
-          </Routes>
-        </Layout>
-      </Layout>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register-success"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/*"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <SiderBar />
+                <Layout
+                  style={{
+                    backgroundColor: "rgb(74, 137, 200)",
+                    minHeight: "100vh",
+                  }}
+                >
+                  <Routes>
+                    <Route path="/" element={<TodoListPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                  </Routes>
+                </Layout>
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+      </Routes>
     </Router>
   );
 }
