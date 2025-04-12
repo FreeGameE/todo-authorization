@@ -2,25 +2,29 @@ import { Button, Form, Input, Typography } from "antd";
 import { Flex } from "antd";
 import "./ProfilePage.css";
 import { useDispatch } from "react-redux";
-import { logout } from "../../../store/authSlice";
+import { authStatusChange } from "../../../store/authSlice";
+import { useCallback, useEffect, useState } from "react";
+import { Profile, ProfileRequest } from "../../../types/auth";
 import {
   getUserProfile,
   logoutUser,
   putUserProfile,
 } from "../../../api/authApi";
-import { useEffect, useState } from "react";
-import { Profile, ProfileRequest } from "../../../types/auth";
 
-const ProfilePage: React.FC = () => {
+type profilePageProps = {
+  checkAuth: () => Promise<void>;
+};
+
+const ProfilePage: React.FC<profilePageProps> = ({ checkAuth }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [profileConflictStatus, setProfileConflictStatus] =
     useState<boolean>(false);
   const [userProfileData, setUserProfileData] = useState<Profile>();
-  // const [form] = Form.useForm();
   const dispatch = useDispatch();
+  let retryCount: number = 0;
 
-  const hadleLogout = async () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    dispatch(authStatusChange(false));
     if (localStorage.getItem("accessToken"))
       try {
         await logoutUser();
@@ -32,13 +36,20 @@ const ProfilePage: React.FC = () => {
       }
   };
 
-  const initUserProfile = async () => {
-    if (localStorage.getItem("accessToken"))
-      try {
-        const response = await getUserProfile();
-        setUserProfileData(response);
-      } catch {}
-  };
+  const initUserProfile = useCallback(async () => {
+    await checkAuth();
+    if (retryCount < 2) {
+      if (localStorage.getItem("accessToken")) {
+        try {
+          const response = await getUserProfile();
+          setUserProfileData(response);
+        } catch (error) {
+          console.error("Ошибка авторизации.");
+        }
+      }
+      retryCount++;
+    }
+  }, [checkAuth, retryCount]);
 
   const onFinish = async (values: any) => {
     const newUserPrifileData: ProfileRequest = {
@@ -48,6 +59,7 @@ const ProfilePage: React.FC = () => {
     };
 
     try {
+      await checkAuth();
       await putUserProfile(newUserPrifileData);
       setIsEditing(false);
       setProfileConflictStatus(false);
@@ -61,7 +73,7 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     initUserProfile();
-  }, []);
+  }, [initUserProfile]);
 
   return (
     <Flex vertical align="center">
@@ -223,7 +235,7 @@ const ProfilePage: React.FC = () => {
               color="blue"
               variant="solid"
               style={{ width: "5rem" }}
-              onClick={() => hadleLogout()}
+              onClick={() => handleLogout()}
             >
               Выйти
             </Button>

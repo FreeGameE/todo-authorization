@@ -47,6 +47,8 @@ export const refreshAccessToken = async () => {
     const response = await api.post("/auth/refresh", {
       refreshToken: localStorage.getItem("refreshToken"),
     });
+    localStorage.setItem("accessToken", response.data.accessToken);
+    localStorage.setItem("refreshToken", response.data.refreshToken);
     return response.data;
   } catch (error: any) {
     throw error;
@@ -72,7 +74,7 @@ export const putUserProfile = async (changedUserData: ProfileRequest) => {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
-    })
+    });
   } catch (error: any) {
     throw error;
   }

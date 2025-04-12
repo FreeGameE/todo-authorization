@@ -7,7 +7,11 @@ import TodoList from "../TodoList/TodoList";
 import "./TodoListPage.css";
 import { Flex, Typography } from "antd";
 
-const TodoListPage: React.FC = () => {
+type todoListPageProps = {
+  checkAuth: () => Promise<void>;
+};
+
+const TodoListPage: React.FC<todoListPageProps> = ({checkAuth}) => {
   const [filteredTodoStatus, setFilteredTodoStatus] = useState<Status>("all");
   const [todosData, setTodosData] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +37,8 @@ const TodoListPage: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     loadTodoList();
-  }, [filteredTodoStatus, loadTodoList]);
+    checkAuth()
+  }, [filteredTodoStatus, loadTodoList, checkAuth]);
 
   return (
     <Flex vertical className="todo-list-page">

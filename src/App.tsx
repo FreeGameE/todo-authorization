@@ -7,7 +7,7 @@ import AuthPage from "./components/auth/AuthPage/AuthPage";
 import { useCallback, useEffect, useState } from "react";
 import PrivateRoute from "./components/auth/PrivateRoute/PrivateRoute";
 import PublicRoute from "./components/auth/PublicRoute/PublicRoute";
-import { logoutUser, refreshAccessToken } from "./api/authApi";
+import { refreshAccessToken } from "./api/authApi";
 import { authStatusChange } from "./store/authSlice";
 import { useDispatch } from "react-redux";
 
@@ -15,24 +15,32 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
 
-  const getTokens = useCallback( async () => {
+  const getTokens = useCallback(async () => {
     setLoading(true);
     if (localStorage.getItem("refreshToken")) {
       try {
-        const response = await refreshAccessToken();
-        console.log(response);
-        localStorage.setItem("accessToken", response.accessToken);
-        localStorage.setItem("refreshToken", response.refreshToken);
+        await refreshAccessToken();
         dispatch(authStatusChange(true));
       } catch (error: any) {
         console.error("Ошибка запроса:", error);
         if (error.response?.status === 401) {
-          logoutUser();
+          dispatch(authStatusChange(false));
         }
       }
     }
     setLoading(false);
-  }, [dispatch])
+  }, [dispatch]);
+
+  const checkAuth = async () => {
+    try {
+      await refreshAccessToken();
+    } catch (error: any) {
+      console.log("checkAuth error");
+      if (error.response?.status === 401) {
+        dispatch(authStatusChange(false));
+      }
+    }
+  };
 
   useEffect(() => {
     if (localStorage.getItem("refreshToken")) {
@@ -41,7 +49,7 @@ function App() {
   }, [getTokens]);
 
   return loading ? (
-    <Flex justify="center" align="center" style={{height: "100vh"}}>
+    <Flex justify="center" align="center" style={{ height: "100vh" }}>
       <Typography.Title level={3} style={{ color: "white" }}>
         Загрузка...
       </Typography.Title>
@@ -94,8 +102,14 @@ function App() {
                   }}
                 >
                   <Routes>
-                    <Route path="/" element={<TodoListPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route
+                      path="/"
+                      element={<TodoListPage checkAuth={checkAuth} />}
+                    />
+                    <Route
+                      path="/profile"
+                      element={<ProfilePage checkAuth={checkAuth} />}
+                    />
                   </Routes>
                 </Layout>
               </Layout>
