@@ -22,7 +22,6 @@ const ProfilePage: React.FC<profilePageProps> = ({ checkAuth }) => {
     useState<boolean>(false);
   const [userProfileData, setUserProfileData] = useState<Profile>();
   const dispatch = useDispatch();
-  let retryCount: number = 0;
 
   const handleLogout = async () => {
     dispatch(authStatusChange(false));
@@ -38,8 +37,9 @@ const ProfilePage: React.FC<profilePageProps> = ({ checkAuth }) => {
   };
 
   const initUserProfile = useCallback(async () => {
+    let retryCount: number = 0;
     await checkAuth();
-    if (retryCount < 2) {                           //защита от бесконечного цикла при отсутствии соединения
+    if (retryCount < 2) {             //защита от бесконечного цикла при отсутствии соединения
       if (tokenManager.getToken()) {
         try {
           const response = await getUserProfile();
@@ -51,7 +51,7 @@ const ProfilePage: React.FC<profilePageProps> = ({ checkAuth }) => {
       }
       retryCount++;
     }
-  }, [checkAuth, retryCount]);
+  }, [checkAuth]);
 
   const onFinish = async (values: any) => {
     const newUserPrifileData: ProfileRequest = {
