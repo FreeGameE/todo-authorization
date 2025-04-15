@@ -10,6 +10,7 @@ import {
   logoutUser,
   putUserProfile,
 } from "../../../api/authApi";
+import { tokenManager } from "../../../services/tokenManager";
 
 type profilePageProps = {
   checkAuth: () => Promise<void>;
@@ -25,10 +26,10 @@ const ProfilePage: React.FC<profilePageProps> = ({ checkAuth }) => {
 
   const handleLogout = async () => {
     dispatch(authStatusChange(false));
-    if (localStorage.getItem("accessToken"))
+    if (tokenManager.getToken())
       try {
         await logoutUser();
-        localStorage.setItem("accessToken", "");
+        tokenManager.clearToken();
         localStorage.setItem("refreshToken", "");
         console.log("Успешный логаут. Токены невалидны.");
       } catch (error) {
@@ -38,11 +39,12 @@ const ProfilePage: React.FC<profilePageProps> = ({ checkAuth }) => {
 
   const initUserProfile = useCallback(async () => {
     await checkAuth();
-    if (retryCount < 2) {
-      if (localStorage.getItem("accessToken")) {
+    if (retryCount < 2) {                           //защита от бесконечного цикла при отсутствии соединения
+      if (tokenManager.getToken()) {
         try {
           const response = await getUserProfile();
           setUserProfileData(response);
+          retryCount = 0;
         } catch (error) {
           console.error("Ошибка авторизации.");
         }

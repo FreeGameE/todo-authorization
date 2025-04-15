@@ -1,5 +1,6 @@
 import axios from "axios";
 import { UserRegistration, AuthData, ProfileRequest } from "../types/auth";
+import { tokenManager } from "../services/tokenManager";
 
 const api = axios.create({
   baseURL: "https://easydev.club/api/v1",
@@ -33,7 +34,7 @@ export const logoutUser = async () => {
   try {
     const response = await api.post("user/logout", null, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        Authorization: `Bearer ${tokenManager.getToken()}`,
       },
     });
     console.log(response);
@@ -47,7 +48,7 @@ export const refreshAccessToken = async () => {
     const response = await api.post("/auth/refresh", {
       refreshToken: localStorage.getItem("refreshToken"),
     });
-    localStorage.setItem("accessToken", response.data.accessToken);
+    tokenManager.setToken(response.data.accessToken)
     localStorage.setItem("refreshToken", response.data.refreshToken);
     return response.data;
   } catch (error: any) {
@@ -59,7 +60,7 @@ export const getUserProfile = async () => {
   try {
     const response = await api.get("/user/profile", {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        Authorization: `Bearer ${tokenManager.getToken()}`,
       },
     });
     return response.data;
@@ -72,7 +73,7 @@ export const putUserProfile = async (changedUserData: ProfileRequest) => {
   try {
     await api.put("/user/profile", changedUserData, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        Authorization: `Bearer ${tokenManager.getToken()}`,
       },
     });
   } catch (error: any) {

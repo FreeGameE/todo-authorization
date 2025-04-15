@@ -5,6 +5,7 @@ import "./LoginBox.css";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { authStatusChange } from "../../../store/authSlice";
+import { tokenManager } from "../../../services/tokenManager";
 
 const LoginBox: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,8 @@ const LoginBox: React.FC = () => {
 
     try {
       const response = await authUser(authData);
-      localStorage.setItem("accessToken", response.accessToken);
+      tokenManager.setToken(response.accessToken)
+      // localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       setIsAuthFailed(false);
       dispatch(authStatusChange(true));

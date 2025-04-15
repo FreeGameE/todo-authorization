@@ -10,11 +10,7 @@ interface Props {
 const PublicRoute = ({ children }: Props) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
 
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
+  return !isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
 export default PublicRoute;
